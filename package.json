@@ -1,0 +1,19 @@
+{
+  "name": "photo-viewer",
+  "version": "1.0.0",
+  "description": "Xiaomi Vela JS 照片查看器应用",
+  "main": "build.js",
+  "scripts": {
+    "build": "node build.js",
+    "start": "echo '请使用 AIoT-IDE 运行项目'"
+  },
+  "keywords": [
+    "xiaomi",
+    "vela",
+    "js",
+    "app",
+    "photo-viewer"
+  ],
+  "author": "",
+  "license": "MIT"
+}

@@ -1,0 +1,20 @@
+{
+  "package": "com.example.photo-viewer",
+  "name": "photo-viewer",
+  "icon": "/common/icon.png",
+  "versionName": "1.0",
+  "versionCode": 1,
+  "minAPILevel": 1,
+  "features": [],
+  "router": {
+    "entry": "index",
+    "pages": {
+      "index": {
+        "component": "index"
+      }
+    }
+  },
+  "display": {
+    "backgroundColor": "#ffffff"
+  }
+}

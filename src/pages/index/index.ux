@@ -1,0 +1,63 @@
+<template>
+  <div class="page">
+    <text class="title">照片查看器</text>
+    <div class="photo-list">
+      <div class="photo-item" for="{{photos}}">
+        <image class="photo" src="{{$item.url}}"></image>
+        <text class="photo-name">{{$item.name}}</text>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style>
+  .page {
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .title {
+    font-size: 40px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #333333;
+  }
+
+  .photo-list {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .photo-item {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+  }
+
+  .photo {
+    width: 100px;
+    height: 100px;
+    margin-right: 20px;
+  }
+
+  .photo-name {
+    font-size: 30px;
+    color: #666666;
+  }
+</style>
+
+<script>
+  export default {
+    private: {
+      photos: [
+        { name: '照片1', url: '/common/photo1.png' },
+        { name: '照片2', url: '/common/photo2.png' },
+        { name: '照片3', url: '/common/photo3.png' }
+      ]
+    }
+  }
+</script>
