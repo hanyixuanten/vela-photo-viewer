@@ -4,7 +4,9 @@
   "icon": "/common/icon.png",
   "versionName": "1.0",
   "versionCode": 1,
-  "minAPILevel": 1,
+  "minPlatformVersion": 1100,
+  "simulationVersion": "default",
+  "deviceTypeList": ["watch"],
   "features": [],
   "config": {
     "logLevel": "log",

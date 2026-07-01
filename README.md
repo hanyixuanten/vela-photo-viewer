@@ -14,8 +14,11 @@ src/
 ├── common/
 │   ├── style.css          # 公共样式
 │   └── utils.js           # 公共工具函数
-└── Common/
-    └── icon.png           # 应用图标
+└── common/
+    ├── icon.png           # 应用图标
+    ├── photo1.png         # 示例照片1
+    ├── photo2.png         # 示例照片2
+    └── photo3.png         # 示例照片3
 ```
 
 ## 开发说明
