@@ -22,8 +22,33 @@ src/
 
 ### 环境要求
 
-- 安装 AIoT-IDE（Xiaomi Vela JS 应用的集成开发环境）
-- 支持 Ubuntu、Windows、MacOS 等操作系统
+- Node.js 14+
+- npm
+- 系统安装了 OpenSSL（release 模式需要）
+
+### 安装依赖
+
+```bash
+npm install
+```
+
+### 构建 rpk 文件
+
+**开发模式构建**（生成 `.debug.rpk`）：
+```bash
+npm run build
+```
+或直接：
+```bash
+node build.js
+```
+
+**生产模式构建**（生成 `.release.rpk`，需要签名文件）：
+```bash
+npm run build:release
+```
+
+构建成功后，rpk 文件会输出到 `dist/` 目录。
 
 ### 运行应用
 
@@ -31,10 +56,10 @@ src/
 2. 启动模拟器
 3. 运行项目查看效果
 
-### 打包应用
-
-1. 在 AIoT-IDE 中使用打包功能
-2. 生成安装包（.rpk 文件）
+或使用命令行：
+```bash
+npm start
+```
 
 ## 应用特点
 

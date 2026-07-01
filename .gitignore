@@ -3,6 +3,10 @@ node_modules/
 
 # 构建输出目录
 dist/
+build/
+
+# 临时目录
+.temp_*/
 
 # 日志文件
 *.log

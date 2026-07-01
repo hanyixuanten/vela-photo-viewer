@@ -5,7 +5,11 @@
   "main": "build.js",
   "scripts": {
     "build": "node build.js",
-    "start": "echo '请使用 AIoT-IDE 运行项目'"
+    "build:release": "node build.js --release",
+    "start": "npx aiot start"
+  },
+  "dependencies": {
+    "aiot-toolkit": "^2.0.5"
   },
   "keywords": [
     "xiaomi",

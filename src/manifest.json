@@ -6,10 +6,14 @@
   "versionCode": 1,
   "minAPILevel": 1,
   "features": [],
+  "config": {
+    "logLevel": "log",
+    "designWidth": 480
+  },
   "router": {
-    "entry": "index",
+    "entry": "pages/index",
     "pages": {
-      "index": {
+      "pages/index": {
         "component": "index"
       }
     }
