@@ -7,10 +7,12 @@
   "minPlatformVersion": 1100,
   "simulationVersion": "default",
   "deviceTypeList": ["watch"],
-  "features": [],
+  "features": [
+    { "name": "system.file" }
+  ],
   "config": {
     "logLevel": "log",
-    "designWidth": 480
+    "designWidth": 432
   },
   "router": {
     "entry": "pages/index",

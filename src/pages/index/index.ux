@@ -1,10 +1,16 @@
 <template>
   <div class="page">
     <text class="title">照片查看器</text>
-    <list class="photo-list">
-      <list-item class="photo-item" for="{{photos}}">
+    <text class="status" if="{{loading}}">加载中...</text>
+    <text class="status" if="{{!loading && photos.length === 0}}">暂无照片</text>
+    <text class="count" if="{{!loading && photos.length > 0}}">共 {{photos.length}} 张</text>
+    <list class="photo-list" if="{{photos.length > 0}}">
+      <list-item class="photo-item" for="{{photos}}" onclick="previewPhoto($item)">
         <image class="photo" src="{{$item.url}}"></image>
-        <text class="photo-name">{{$item.name}}</text>
+        <div class="photo-info">
+          <text class="photo-name">{{$item.name}}</text>
+          <text class="photo-size">{{$item.sizeText}}</text>
+        </div>
       </list-item>
     </list>
   </div>
@@ -14,14 +20,26 @@
   .page {
     flex-direction: column;
     align-items: center;
-    padding: 20dp;
+    padding: 16px;
   }
 
   .title {
-    font-size: 40dp;
+    font-size: 24px;
     font-weight: bold;
-    margin-bottom: 30dp;
+    margin-bottom: 8px;
     color: #333333;
+  }
+
+  .status {
+    font-size: 16px;
+    color: #999999;
+    margin-top: 40px;
+  }
+
+  .count {
+    font-size: 14px;
+    color: #888888;
+    margin-bottom: 8px;
   }
 
   .photo-list {
@@ -32,32 +50,126 @@
   .photo-item {
     flex-direction: row;
     align-items: center;
-    margin-bottom: 20dp;
-    padding: 15dp;
+    margin-bottom: 8px;
+    padding: 8px;
     background-color: #f5f5f5;
-    border-radius: 10dp;
+    border-radius: 6px;
   }
 
   .photo {
-    width: 100dp;
-    height: 100dp;
-    margin-right: 20dp;
+    width: 56px;
+    height: 56px;
+    margin-right: 8px;
+  }
+
+  .photo-info {
+    flex-direction: column;
+    flex-shrink: 1;
   }
 
   .photo-name {
-    font-size: 30dp;
-    color: #666666;
+    font-size: 18px;
+    color: #333333;
+    text-overflow: ellipsis;
+    lines: 1;
+  }
+
+  .photo-size {
+    font-size: 12px;
+    color: #999999;
+    margin-top: 2px;
   }
 </style>
 
 <script>
+  import file from '@system.file'
+
+  // 图片扩展名白名单
+  const IMAGE_EXTS = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp']
+
+  // 照片存储目录
+  const PHOTOS_DIR = 'internal://files/photos/'
+
   export default {
     private: {
-      photos: [
-        { name: '照片1', url: '/common/photo1.png' },
-        { name: '照片2', url: '/common/photo2.png' },
-        { name: '照片3', url: '/common/photo3.png' }
-      ]
+      photos: [],
+      loading: true
+    },
+
+    onInit() {
+      this.scanPhotos()
+    },
+
+    /**
+     * 扫描 photos 目录，自动加载所有图片
+     */
+    scanPhotos() {
+      var self = this
+      self.loading = true
+
+      file.list({
+        uri: PHOTOS_DIR,
+        success: function (data) {
+          var list = data.fileList || []
+          var imageFiles = []
+
+          for (var i = 0; i < list.length; i++) {
+            var f = list[i]
+            var uri = f.uri || ''
+            var lowerUri = uri.toLowerCase()
+            var isImage = false
+
+            for (var j = 0; j < IMAGE_EXTS.length; j++) {
+              if (lowerUri.lastIndexOf(IMAGE_EXTS[j]) === lowerUri.length - IMAGE_EXTS[j].length) {
+                isImage = true
+                break
+              }
+            }
+
+            if (isImage) {
+              // 从 URI 中提取文件名
+              var parts = uri.split('/')
+              var fileName = parts[parts.length - 1]
+
+              imageFiles.push({
+                name: fileName,
+                url: uri,
+                sizeText: self.formatSize(f.length || 0)
+              })
+            }
+          }
+
+          // 按文件名排序
+          imageFiles.sort(function (a, b) {
+            return a.name > b.name ? 1 : a.name < b.name ? -1 : 0
+          })
+
+          self.photos = imageFiles
+          self.loading = false
+          console.log('扫描完成，共找到 ' + imageFiles.length + ' 张图片')
+        },
+        fail: function (data, code) {
+          console.log('扫描照片目录失败，错误码: ' + code)
+          self.photos = []
+          self.loading = false
+        }
+      })
+    },
+
+    /**
+     * 点击照片可预览（预留扩展）
+     */
+    previewPhoto(item) {
+      console.log('点击了照片: ' + item.name)
+    },
+
+    /**
+     * 格式化文件大小
+     */
+    formatSize(bytes) {
+      if (bytes < 1024) return bytes + ' B'
+      if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB'
+      return (bytes / 1048576).toFixed(1) + ' MB'
     }
   }
 </script>
