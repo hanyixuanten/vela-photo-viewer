@@ -15,6 +15,7 @@ const path = require('path');
 const projectDir = __dirname;
 const srcDir = path.join(projectDir, 'src');
 const distDir = path.join(projectDir, 'dist');
+const buildDir = path.join(projectDir, 'build');
 const signDir = path.join(projectDir, 'sign');
 const isRelease = process.argv.includes('--release');
 
@@ -97,6 +98,10 @@ function cleanDist() {
   if (fs.existsSync(distDir)) {
     fs.rmSync(distDir, { recursive: true, force: true });
     console.log('🧹 已清理 dist 目录');
+  }
+  if (fs.existsSync(buildDir)) {
+    fs.rmSync(buildDir, { recursive: true, force: true });
+    console.log('🧹 已清理 build 目录');
   }
 }
 
