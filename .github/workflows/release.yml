@@ -2,8 +2,7 @@ name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    branches: [ "master" ]
 
 permissions:
   contents: write
@@ -28,16 +27,21 @@ jobs:
         run: npm run build
 
       - name: Collect artifacts
-        id: artifacts
         run: |
-          # 查找所有 .rpk 文件并整理到单独目录
           mkdir -p release
           find dist -name "*.rpk" -exec cp {} release/ \;
-          echo "files=$(ls release/*.rpk | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
-          echo "count=$(ls release/*.rpk | wc -l)" >> "$GITHUB_OUTPUT"
+
+      - name: Create tag
+        run: |
+          TAG="build-$(date +%Y%m%d-%H%M%S)-${GITHUB_SHA::7}"
+          git tag "$TAG"
+          git push origin "$TAG"
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.TAG }}
+          name: Build ${{ env.TAG }}
           generate_release_notes: true
           files: release/*.rpk
