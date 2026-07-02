@@ -13,6 +13,7 @@
         </div>
       </list-item>
     </list>
+    <input type="button" class="btn-import" value="导入照片" onclick="goCopy" />
   </div>
 </template>
 
@@ -79,10 +80,22 @@
     color: #999999;
     margin-top: 2px;
   }
+
+  .btn-import {
+    width: 60%;
+    height: 36px;
+    background-color: #2196f3;
+    color: #ffffff;
+    font-size: 15px;
+    border-radius: 6px;
+    margin-top: 16px;
+    text-align: center;
+  }
 </style>
 
 <script>
   import file from '@system.file'
+  import router from '@system.router'
 
   // 图片扩展名白名单
   const IMAGE_EXTS = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp']
@@ -170,6 +183,13 @@
       if (bytes < 1024) return bytes + ' B'
       if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB'
       return (bytes / 1048576).toFixed(1) + ' MB'
+    },
+
+    /**
+     * 跳转到导入照片页面
+     */
+    goCopy() {
+      router.push({ uri: 'pages/copy/copy' })
     }
   }
 </script>

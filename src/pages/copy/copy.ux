@@ -1,0 +1,213 @@
+<template>
+  <div class="page">
+    <text class="title">导入照片</text>
+    <text class="desc">将 /common/photos/ 中的照片复制到设备存储</text>
+
+    <div class="progress-area" if="{{copying}}">
+      <text class="progress-text">正在复制 {{currentName}} ({{currentIndex}}/{{total}})</text>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fg" style="width: {{progressPercent}}%"></div>
+      </div>
+    </div>
+
+    <text class="result" if="{{!copying && result !== ''}}">{{result}}</text>
+
+    <div class="btn-area">
+      <input type="button" class="btn" value="开始复制" onclick="startCopy" disabled="{{copying}}" />
+      <input type="button" class="btn btn-back" value="返回查看" onclick="goBack" />
+    </div>
+  </div>
+</template>
+
+<style>
+  .page {
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+  }
+
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #333333;
+  }
+
+  .desc {
+    font-size: 13px;
+    color: #888888;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .progress-area {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  .progress-text {
+    font-size: 14px;
+    color: #555555;
+    margin-bottom: 8px;
+  }
+
+  .progress-bar-bg {
+    width: 80%;
+    height: 8px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+  }
+
+  .progress-bar-fg {
+    height: 8px;
+    background-color: #4caf50;
+    border-radius: 4px;
+  }
+
+  .result {
+    font-size: 15px;
+    color: #333333;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .btn-area {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .btn {
+    width: 70%;
+    height: 40px;
+    background-color: #4caf50;
+    color: #ffffff;
+    font-size: 16px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .btn-back {
+    background-color: #888888;
+  }
+</style>
+
+<script>
+  import file from '@system.file'
+  import router from '@system.router'
+
+  // 照片清单配置文件（放在 common/ 下方便维护）
+  const PHOTO_LIST_PATH = '/common/photo-list.json'
+  const BUNDLED_PHOTOS_DIR = '/common/photos/'
+  const DEVICE_PHOTOS_DIR = 'internal://files/photos/'
+
+  export default {
+    private: {
+      photoNames: [],
+      copying: false,
+      currentName: '',
+      currentIndex: 0,
+      total: 0,
+      progressPercent: 0,
+      result: ''
+    },
+
+    onInit() {
+      this.loadPhotoList()
+    },
+
+    /**
+     * 从配置文件读取照片文件名列表
+     */
+    loadPhotoList() {
+      var self = this
+      file.readText({
+        uri: PHOTO_LIST_PATH,
+        success: function (data) {
+          try {
+            self.photoNames = JSON.parse(data.text)
+          } catch (e) {
+            self.photoNames = []
+            console.log('解析 photo-list.json 失败: ' + e.message)
+          }
+        },
+        fail: function (data, code) {
+          self.photoNames = []
+          console.log('读取 photo-list.json 失败，错误码: ' + code)
+        }
+      })
+    },
+
+    /**
+     * 开始复制流程
+     */
+    startCopy() {
+      if (this.copying) return
+      if (this.photoNames.length === 0) {
+        this.result = '没有找到照片清单'
+        return
+      }
+
+      this.copying = true
+      this.total = this.photoNames.length
+      this.currentIndex = 0
+      this.progressPercent = 0
+      this.result = ''
+      this.copyNext()
+    },
+
+    /**
+     * 逐张复制（串行，避免内存峰值）
+     */
+    copyNext() {
+      var self = this
+      if (self.currentIndex >= self.photoNames.length) {
+        self.copying = false
+        self.result = '全部复制完成！共 ' + self.total + ' 张'
+        return
+      }
+
+      var name = self.photoNames[self.currentIndex]
+      self.currentName = name
+      self.currentIndex++
+      self.progressPercent = Math.round((self.currentIndex / self.total) * 100)
+
+      // 从应用资源读取
+      file.readArrayBuffer({
+        uri: BUNDLED_PHOTOS_DIR + name,
+        success: function (data) {
+          // 写入设备存储
+          file.writeArrayBuffer({
+            uri: DEVICE_PHOTOS_DIR + name,
+            buffer: data.buffer,
+            success: function () {
+              console.log('复制成功: ' + name)
+              self.copyNext()
+            },
+            fail: function (d, code) {
+              console.log('写入失败: ' + name + '，错误码: ' + code)
+              self.result = '写入失败: ' + name
+              self.copying = false
+            }
+          })
+        },
+        fail: function (data, code) {
+          console.log('读取失败: ' + name + '，错误码: ' + code)
+          self.result = '读取失败: ' + name
+          self.copying = false
+        }
+      })
+    },
+
+    /**
+     * 返回首页查看照片
+     */
+    goBack() {
+      router.back()
+    }
+  }
+</script>
