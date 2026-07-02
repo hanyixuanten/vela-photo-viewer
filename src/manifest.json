@@ -9,7 +9,8 @@
   "deviceTypeList": ["watch"],
   "features": [
     { "name": "system.file" },
-    {"name": "system.router"}
+    { "name": "system.router" },
+    { "name": "system.fetch" }
   ],
   "config": {
     "logLevel": "log",

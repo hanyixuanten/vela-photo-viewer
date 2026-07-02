@@ -99,6 +99,7 @@
 <script>
   import file from '@system.file'
   import router from '@system.router'
+  import fetch from '@system.fetch'
 
   // 照片文件名列表 —— 新增照片时在这里添加即可
   const PHOTO_NAMES = ['photo1.png']
@@ -150,14 +151,16 @@
       self.currentIndex++
       self.progressPercent = Math.round((self.currentIndex / self.total) * 100)
 
-      // 从应用资源读取
-      file.readArrayBuffer({
-        uri: BUNDLED_PHOTOS_DIR + name,
-        success: function (data) {
+      // 通过 fetch 读取应用资源（file.readArrayBuffer 不支持资源路径）
+      fetch.fetch({
+        url: BUNDLED_PHOTOS_DIR + name,
+        responseType: 'arraybuffer',
+        success: function (response) {
+          var buffer = response.data
           // 写入设备存储
           file.writeArrayBuffer({
             uri: DEVICE_PHOTOS_DIR + name,
-            buffer: data.buffer,
+            buffer: buffer,
             success: function () {
               console.log('复制成功: ' + name)
               self.copyNext()
