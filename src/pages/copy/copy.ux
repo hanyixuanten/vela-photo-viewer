@@ -100,46 +100,20 @@
   import file from '@system.file'
   import router from '@system.router'
 
-  // 照片清单配置文件（放在 common/ 下方便维护）
-  const PHOTO_LIST_PATH = '/common/photo-list.json'
+  // 照片文件名列表 —— 新增照片时在这里添加即可
+  const PHOTO_NAMES = ['photo1.png']
   const BUNDLED_PHOTOS_DIR = '/common/photos/'
   const DEVICE_PHOTOS_DIR = 'internal://files/photos/'
 
   export default {
     private: {
-      photoNames: [],
+      photoNames: PHOTO_NAMES,
       copying: false,
       currentName: '',
       currentIndex: 0,
       total: 0,
       progressPercent: 0,
       result: ''
-    },
-
-    onInit() {
-      this.loadPhotoList()
-    },
-
-    /**
-     * 从配置文件读取照片文件名列表
-     */
-    loadPhotoList() {
-      var self = this
-      file.readText({
-        uri: PHOTO_LIST_PATH,
-        success: function (data) {
-          try {
-            self.photoNames = JSON.parse(data.text)
-          } catch (e) {
-            self.photoNames = []
-            console.log('解析 photo-list.json 失败: ' + e.message)
-          }
-        },
-        fail: function (data, code) {
-          self.photoNames = []
-          console.log('读取 photo-list.json 失败，错误码: ' + code)
-        }
-      })
     },
 
     /**

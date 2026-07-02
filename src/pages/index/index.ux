@@ -189,7 +189,7 @@
      * 跳转到导入照片页面
      */
     goCopy() {
-      router.push({ uri: 'pages/copy/copy' })
+      router.push({ uri: '/pages/copy' })
     }
   }
 </script>
